@@ -1,0 +1,51 @@
+# Visual Studio / .NET ignore file
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+**/bin/
+**/obj/
+publish/
+artifacts/
+
+# Visual Studio cache and config
+.vs/
+.vscode/
+
+# NuGet packages and package artifacts
+packages/
+**/packages/
+.nuget/
+*.nupkg
+*.snupkg
+**/*.nupkg
+**/*.snupkg
+
+# Ignore NuGet global packages folder (won't usually be in repo)
+# %USERPROFILE%\.nuget\packages
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Generated files
+*.Generated.cs
+
+# Common lock/build files you may want to untrack
+project.assets.json
+project.nuget.cache
+
+**/ProductsCSV/
