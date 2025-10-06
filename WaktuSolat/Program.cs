@@ -1,17 +1,12 @@
 using WaktuSolat.Model;
-using System;
-using System.IO;
 using System.Globalization;
 using CsvHelper;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using System.Threading;
-using System.Linq;
-using System.Collections.Generic;
 
-// Configuration: set your desired zone code here
-string zoneCode = "PRK01"; // Change this to your preferred zone (e.g., "JHR02", "KDH01", etc.)
+// Change this to your preferred zone
+string zoneCode = "TRG04"; 
 
 var url = "https://www.e-solat.gov.my/";
 
