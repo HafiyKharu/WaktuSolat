@@ -9,6 +9,7 @@ namespace WaktuSolat.Model
         public string? Imsak { get; set; }
         public string? Subuh { get; set; }
         public string? Syuruk { get; set; }
+        public string? Dhuha { get; set; }
         public string? Zohor { get; set; }
         public string? Asar { get; set; }
         public string? Maghrib { get; set; }

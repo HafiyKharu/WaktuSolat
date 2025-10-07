@@ -6,7 +6,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 
 // Change this to your preferred zone
-string zoneCode = "TRG04"; 
+string zoneCode = "WLY01"; 
 
 var url = "https://www.e-solat.gov.my/";
 
@@ -22,6 +22,7 @@ options.AddAdditionalOption("useAutomationExtension", false);
 using var service = ChromeDriverService.CreateDefaultService();
 service.SuppressInitialDiagnosticInformation = true;
 service.HideCommandPromptWindow = true;
+var hijriCal = new HijriCalendar();
 
 try
 {
@@ -98,32 +99,23 @@ try
         return map;
     }
 
+    var columnMap = ExtractFromColumns();
+
     var waktu = new WaktuSolatEntity
     {
         czone = GetTextByIdSafe("czone"),
         cbearing = GetTextByIdSafe("cbearing"),
         TarikhMasehi = DateTime.Now.ToString("dd/MM/yyyy"),
-        TarikhHijrah = string.Empty,
+        TarikhHijrah = $"{hijriCal.GetDayOfMonth(DateTime.Now)}/{hijriCal.GetMonth(DateTime.Now)}/{hijriCal.GetYear(DateTime.Now)}",
         Imsak = GetTextByIdSafe("timsak"),
         Subuh = GetTextByIdSafe("tsubuh"),
         Syuruk = GetTextByIdSafe("tsyuruk"),
+        Dhuha = GetTextByIdSafe("tdhuha"),
         Zohor = GetTextByIdSafe("tzohor"),
         Asar = GetTextByIdSafe("tasar"),
         Maghrib = GetTextByIdSafe("tmagrib"),
         Isyak = GetTextByIdSafe("tisyak")
     };
-
-    if (new[] { waktu.Imsak, waktu.Subuh, waktu.Syuruk, waktu.Zohor, waktu.Asar, waktu.Maghrib, waktu.Isyak }.Any(string.IsNullOrWhiteSpace))
-    {
-        var fb = ExtractFromColumns();
-        if (string.IsNullOrWhiteSpace(waktu.Imsak) && fb.TryGetValue("IMSAK", out var v1)) waktu.Imsak = v1;
-        if (string.IsNullOrWhiteSpace(waktu.Subuh) && fb.TryGetValue("SUBUH", out var v2)) waktu.Subuh = v2;
-        if (string.IsNullOrWhiteSpace(waktu.Syuruk) && fb.TryGetValue("SYURUK", out var v3)) waktu.Syuruk = v3;
-        if (string.IsNullOrWhiteSpace(waktu.Zohor) && fb.TryGetValue("ZOHOR", out var v4)) waktu.Zohor = v4;
-        if (string.IsNullOrWhiteSpace(waktu.Asar) && fb.TryGetValue("ASAR", out var v5)) waktu.Asar = v5;
-        if (string.IsNullOrWhiteSpace(waktu.Maghrib) && fb.TryGetValue("MAGHRIB", out var v6)) waktu.Maghrib = v6;
-        if (string.IsNullOrWhiteSpace(waktu.Isyak) && fb.TryGetValue("ISYAK", out var v7)) waktu.Isyak = v7;
-    }
 
     var outDir = Path.Combine(Directory.GetCurrentDirectory(), "WaktuSolatCSV");
     Directory.CreateDirectory(outDir);
