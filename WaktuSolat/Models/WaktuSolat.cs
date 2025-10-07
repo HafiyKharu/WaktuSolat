@@ -1,4 +1,4 @@
-namespace WaktuSolat.Model
+namespace WaktuSolat.Models
 {
     public class WaktuSolatEntity
     {
