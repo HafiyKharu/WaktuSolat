@@ -16,7 +16,13 @@ public class ExtractExcel
     {
         _config = config;
         _zoneCode = _config["ZoneCode"] ?? throw new InvalidOperationException("ZoneCode is not configured in appsettings.json");
-        _filePath = _config["FilePath"] ?? throw new InvalidOperationException("FilePath is not configured in appsettings.json");
+        
+        var configuredPath = _config["FilePath"] ?? throw new InvalidOperationException("FilePath is not configured in appsettings.json");
+        
+        // Resolve relative path to absolute path
+        _filePath = Path.IsPathRooted(configuredPath) 
+            ? configuredPath 
+            : Path.Combine(Directory.GetCurrentDirectory(), configuredPath);
     }
 
     public async Task ExportToCsvAsync(WaktuSolatEntity data)
@@ -26,19 +32,23 @@ public class ExtractExcel
 
         try
         {
+            // Ensure directory exists
             var directory = Path.GetDirectoryName(_filePath);
-            if (!string.IsNullOrEmpty(directory))
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
+                Console.WriteLine($"Created directory: {directory}");
             }
+
+            var fileExists = File.Exists(_filePath) && new FileInfo(_filePath).Length > 0;
 
             await using var writer = new StreamWriter(_filePath, false, System.Text.Encoding.UTF8);
             await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                HasHeaderRecord = !File.Exists(_filePath) || new FileInfo(_filePath).Length == 0
+                HasHeaderRecord = true
             });
 
-            csv.WriteRecords([data]);
+            csv.WriteRecords(new[] { data });
             await writer.FlushAsync();
 
             Console.WriteLine($"✓ Saved waktu solat for zone {_zoneCode} to: {_filePath}");
@@ -46,6 +56,7 @@ public class ExtractExcel
         catch (IOException ioEx)
         {
             Console.WriteLine($"✗ File access error: {ioEx.Message}");
+            Console.WriteLine($"✗ Attempted path: {_filePath}");
             throw;
         }
         catch (Exception ex)
@@ -62,10 +73,12 @@ public class ExtractExcel
 
         try
         {
+            // Ensure directory exists
             var directory = Path.GetDirectoryName(_filePath);
-            if (!string.IsNullOrEmpty(directory))
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
+                Console.WriteLine($"Created directory: {directory}");
             }
 
             var fileExists = File.Exists(_filePath) && new FileInfo(_filePath).Length > 0;
@@ -84,6 +97,7 @@ public class ExtractExcel
         catch (Exception ex)
         {
             Console.WriteLine($"✗ Error appending to CSV: {ex.Message}");
+            Console.WriteLine($"✗ Attempted path: {_filePath}");
             throw;
         }
     }

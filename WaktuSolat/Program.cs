@@ -1,28 +1,33 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using WaktuSolat.Services;
 
-var config = new ConfigurationBuilder()
+var builder = Host.CreateApplicationBuilder(args);
+
+// Add configuration
+builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .Build();
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-var services = new ServiceCollection();
-services.AddSingleton<IConfiguration>(config);
-services.AddScoped<ScrapWaktuSolatService>();
-services.AddScoped<ExtractExcel>();
+// Register services
+builder.Services.AddScoped<ScrapWaktuSolatService>();
+builder.Services.AddScoped<ExtractExcel>();
 
-var serviceProvider = services.BuildServiceProvider();
+var host = builder.Build();
 
 try
 {
-    using var scope = serviceProvider.CreateScope();
-    var scopedProvider = scope.ServiceProvider;
+    using var scope = host.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var config = services.GetRequiredService<IConfiguration>();
     
     var zoneCode = config["ZoneCode"] ?? throw new InvalidOperationException("ZoneCode not configured");
 
     Console.WriteLine($"Starting waktu solat scraper for zone: {zoneCode}");
 
-    var scrapService = scopedProvider.GetRequiredService<ScrapWaktuSolatService>();
-    var exportService = scopedProvider.GetRequiredService<ExtractExcel>();
+    var scrapService = services.GetRequiredService<ScrapWaktuSolatService>();
+    var exportService = services.GetRequiredService<ExtractExcel>();
 
     var waktu = await scrapService.GetWaktuSolatAsync(zoneCode);
 
@@ -40,9 +45,6 @@ try
 catch (Exception ex)
 {
     Console.WriteLine($"✗ Fatal error: {ex.Message}");
+    Console.WriteLine($"Stack trace: {ex.StackTrace}");
     Environment.ExitCode = 1;
-}
-finally
-{
-    await serviceProvider.DisposeAsync();
 }
