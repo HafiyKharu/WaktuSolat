@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using WaktuSolat.Services;
+using WaktuSolat.Repository;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -10,9 +12,13 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
+// Register DbContext
+builder.Services.AddDbContext<WaktuSolatDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Register services
 builder.Services.AddScoped<ScrapWaktuSolatService>();
-builder.Services.AddScoped<ExtractExcel>();
+builder.Services.AddScoped<WaktuSolatRepository>();
 
 var host = builder.Build();
 
@@ -22,12 +28,17 @@ try
     var services = scope.ServiceProvider;
     var config = services.GetRequiredService<IConfiguration>();
     
+    // Run migrations
+    var dbContext = services.GetRequiredService<WaktuSolatDbContext>();
+    await dbContext.Database.MigrateAsync();
+    Console.WriteLine("✓ Database migrations applied");
+    
     var zoneCode = config["ZoneCode"] ?? throw new InvalidOperationException("ZoneCode not configured");
 
     Console.WriteLine($"Starting waktu solat scraper for zone: {zoneCode}");
 
     var scrapService = services.GetRequiredService<ScrapWaktuSolatService>();
-    var exportService = services.GetRequiredService<ExtractExcel>();
+    var repository = services.GetRequiredService<WaktuSolatRepository>();
 
     var waktu = await scrapService.GetWaktuSolatAsync(zoneCode);
 
@@ -38,7 +49,7 @@ try
         return;
     }
 
-    await exportService.ExportToCsvAsync(waktu);
+    await repository.SaveAsync(waktu);
 
     Console.WriteLine("✓ Process completed successfully!");
 }
