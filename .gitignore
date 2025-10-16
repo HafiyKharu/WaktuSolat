@@ -49,3 +49,4 @@ project.assets.json
 project.nuget.cache
 
 **/WaktuSolatCSV/
+**/appsettings.json
