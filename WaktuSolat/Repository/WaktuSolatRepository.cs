@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using WaktuSolat.Models;
 
 namespace WaktuSolat.Repository;
@@ -7,12 +6,10 @@ namespace WaktuSolat.Repository;
 public class WaktuSolatRepository
 {
     private readonly WaktuSolatDbContext _context;
-    private readonly string _zoneCode;
 
-    public WaktuSolatRepository(WaktuSolatDbContext context, IConfiguration config)
+    public WaktuSolatRepository(WaktuSolatDbContext context)
     {
         _context = context;
-        _zoneCode = config["ZoneCode"] ?? throw new InvalidOperationException("ZoneCode is not configured");
     }
 
     public async Task<bool> SaveAsync(WaktuSolatEntity data)
@@ -22,15 +19,19 @@ public class WaktuSolatRepository
 
         try
         {
-            // Check if record already exists for today and zone
+            // Ensure CreatedAt is UTC
+            data.CreatedAt = DateTime.UtcNow;
+
+            // Extract just the zone code (e.g., "WLY01") from full zone string
+            var zoneCode = data.czone?.Split('-')[0].Trim() ?? data.czone;
+
             var existingRecord = await _context.WaktuSolat
                 .FirstOrDefaultAsync(w => 
-                    w.czone == data.czone && 
+                    w.czone.Contains(zoneCode) && 
                     w.TarikhMasehi == data.TarikhMasehi);
 
             if (existingRecord != null)
             {
-                // Update existing record
                 existingRecord.cbearing = data.cbearing;
                 existingRecord.TarikhHijrah = data.TarikhHijrah;
                 existingRecord.Imsak = data.Imsak;
@@ -41,29 +42,70 @@ public class WaktuSolatRepository
                 existingRecord.Asar = data.Asar;
                 existingRecord.Maghrib = data.Maghrib;
                 existingRecord.Isyak = data.Isyak;
+                existingRecord.CreatedAt = DateTime.UtcNow;
 
                 _context.WaktuSolat.Update(existingRecord);
-                Console.WriteLine($"Updated existing record for zone {data.czone} on {data.TarikhMasehi}");
+                Console.WriteLine($"✓ Updated existing record for zone {data.czone} on {data.TarikhMasehi}");
             }
             else
             {
-                // Insert new record
                 await _context.WaktuSolat.AddAsync(data);
-                Console.WriteLine($"Inserted new record for zone {data.czone} on {data.TarikhMasehi}");
+                Console.WriteLine($"✓ Inserted new record for zone {data.czone} on {data.TarikhMasehi}");
             }
 
-            await _context.SaveChangesAsync();
-            Console.WriteLine($"✓ Successfully saved waktu solat data to database");
+            var result = await _context.SaveChangesAsync();
+            Console.WriteLine($"✓ Successfully saved {result} record(s) to database");
             return true;
-        }
-        catch (DbUpdateException dbEx)
-        {
-            Console.WriteLine($"✗ Database update error: {dbEx.InnerException?.Message ?? dbEx.Message}");
-            throw;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"✗ Error saving to database: {ex.Message}");
+            Console.WriteLine($"✗ Stack trace: {ex.StackTrace}");
+            throw;
+        }
+    }
+
+    public async Task<WaktuSolatEntity?> GetTodayPrayerTimeAsync(string zoneCode)
+    {
+        try
+        {
+            var today = DateTime.Now.ToString("dd/MM/yyyy");
+            
+            Console.WriteLine($"Searching for zone: {zoneCode}, date: {today}");
+
+            // Search using Contains to handle both "WLY01" and "WLY01 - Kuala Lumpur, Putrajaya"
+            var result = await _context.WaktuSolat
+                .Where(w => w.czone.Contains(zoneCode) && w.TarikhMasehi == today)
+                .OrderByDescending(w => w.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (result != null)
+            {
+                Console.WriteLine($"✓ Found prayer time for zone {result.czone} on {result.TarikhMasehi}");
+            }
+            else
+            {
+                Console.WriteLine($"✗ No prayer time found for zone {zoneCode} on {today}");
+                
+                // Debug: Show what's in the database
+                var allRecords = await _context.WaktuSolat
+                    .OrderByDescending(w => w.CreatedAt)
+                    .Take(5)
+                    .Select(w => new { w.czone, w.TarikhMasehi, w.CreatedAt })
+                    .ToListAsync();
+                
+                Console.WriteLine($"Recent records in database:");
+                foreach (var record in allRecords)
+                {
+                    Console.WriteLine($"  - Zone: {record.czone}, Date: {record.TarikhMasehi}, Created: {record.CreatedAt}");
+                }
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✗ Error retrieving prayer time: {ex.Message}");
             throw;
         }
     }
@@ -72,10 +114,8 @@ public class WaktuSolatRepository
     {
         try
         {
-            var startDate = DateTime.Now.AddDays(-days).ToString("dd/MM/yyyy");
-            
             return await _context.WaktuSolat
-                .Where(w => w.czone == zoneCode)
+                .Where(w => w.czone.Contains(zoneCode))
                 .OrderByDescending(w => w.CreatedAt)
                 .Take(days)
                 .ToListAsync();

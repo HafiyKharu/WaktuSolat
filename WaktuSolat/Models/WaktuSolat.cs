@@ -20,5 +20,5 @@ public class WaktuSolatEntity
     public string Asar { get; set; } = string.Empty;
     public string Maghrib { get; set; } = string.Empty;
     public string Isyak { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

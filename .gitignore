@@ -48,5 +48,6 @@ packages/
 project.assets.json
 project.nuget.cache
 
-**/WaktuSolatCSV/
 **/appsettings.json
+**/properties/PublishProfiles/
+**/Migrations/
