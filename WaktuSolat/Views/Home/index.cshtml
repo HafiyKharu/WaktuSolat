@@ -1,6 +1,8 @@
 @model WaktuSolat.Models.WaktuSolatEntity
 @{
     ViewData["Title"] = "Waktu Solat";
+    var allZones = ViewBag.AllZones as List<WaktuSolat.Models.ZoneGroup>;
+    var selectedZone = ViewBag.SelectedZone as string ?? "WLY01";
 }
 
 <!DOCTYPE html>
@@ -39,8 +41,41 @@
         h1 {
             color: #333;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             font-size: 2.5rem;
+        }
+
+        .zone-selector {
+            margin-bottom: 30px;
+        }
+
+        .zone-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .zone-selector select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .zone-selector select:hover {
+            border-color: #667eea;
+        }
+
+        .zone-selector select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .zone-info {
@@ -48,6 +83,9 @@
             color: #666;
             margin-bottom: 20px;
             font-size: 1.1rem;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
         .alert {
@@ -184,6 +222,27 @@
     <div class="container">
         <h1>⏰ Waktu Solat</h1>
 
+        @if (allZones != null && allZones.Any())
+        {
+            <div class="zone-selector">
+                <label for="zoneSelect">📍 Pilih Zon:</label>
+                <select id="zoneSelect" onchange="changeZone(this.value)">
+                    <option value="">-- Pilih Zon --</option>
+                    @foreach (var group in allZones)
+                    {
+                        <optgroup label="@group.State">
+                            @foreach (var zone in group.Zones)
+                            {
+                                <option value="@zone.Value" selected="@(zone.Value == selectedZone)">
+                                    @zone.Text
+                                </option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </div>
+        }
+
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">
@@ -269,7 +328,7 @@
                 </div>
             </div>
 
-            <form method="post" asp-action="RefreshData" asp-route-zone="@Model.czone" onsubmit="showLoading()">
+            <form method="post" asp-action="RefreshData" asp-route-zone="@selectedZone" onsubmit="showLoading()">
                 <button type="submit" class="refresh-btn">🔄 Kemas Kini Data</button>
             </form>
 
@@ -280,10 +339,24 @@
     </div>
 
     <script>
+        function changeZone(zoneValue) {
+            if (zoneValue) {
+                window.location.href = '@Url.Action("Index", "Home")?zone=' + zoneValue;
+            }
+        }
+
         function showLoading() {
             document.querySelector('.refresh-btn').innerHTML = '⏳ Memuat...';
             document.querySelector('.refresh-btn').disabled = true;
         }
+
+        // Set the selected zone on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            var select = document.getElementById('zoneSelect');
+            if (select) {
+                select.value = '@selectedZone';
+            }
+        });
     </script>
 </body>
 

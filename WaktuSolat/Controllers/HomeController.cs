@@ -28,6 +28,11 @@ public class HomeController : Controller
 
             Console.WriteLine($"=== HomeController.Index called with zone: {zoneCode} ===");
 
+            // Get all available zones for dropdown
+            var allZones = await _scrapService.GetAllZonesAsync();
+            ViewBag.AllZones = allZones;
+            ViewBag.SelectedZone = zoneCode;
+
             // Step 1: Check if data exists for today
             var prayerTimes = await _repository.GetTodayPrayerTimeAsync(zoneCode);
 
@@ -59,7 +64,7 @@ public class HomeController : Controller
 
                 // Step 4: Retrieve the saved data
                 prayerTimes = await _repository.GetTodayPrayerTimeAsync(zoneCode);
-                
+
                 if (prayerTimes == null)
                 {
                     ViewBag.Error = "Data was saved but could not be retrieved. Please refresh the page.";

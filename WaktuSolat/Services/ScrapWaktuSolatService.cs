@@ -99,9 +99,8 @@ public class ScrapWaktuSolatService
         driver.Navigate().GoToUrl(_url);
         Thread.Sleep(_waitForPageToLoad);
 
-        var zoneDropdown = driver.FindElement(By.Id("inputzone"));
-        zoneDropdown.SendKeys(zoneCode);
-        zoneDropdown.SendKeys(Keys.Enter);
+        var selectElement = new SelectElement(driver.FindElement(By.Id("inputzone")));
+        selectElement.SelectByValue(zoneCode);
 
         Console.WriteLine($"Selected zone: {zoneCode}");
         Thread.Sleep(_waitForPageToLoad);
@@ -163,15 +162,88 @@ public class ScrapWaktuSolatService
         {
             var element = driver.FindElement(By.Id(id));
             var text = element?.Text?.Trim();
-            
+
             if (string.IsNullOrWhiteSpace(text) || text == "-" || text == "00:00:00")
                 return string.Empty;
-                
+
             return text;
         }
         catch
         {
             return string.Empty;
+        }
+    }
+    
+    public async Task<List<ZoneGroup>> GetAllZonesAsync()
+    {
+        return await Task.Run(() => GetAllZones());
+    }
+
+    private List<ZoneGroup> GetAllZones()
+    {
+        IWebDriver? driver = null;
+        ChromeDriverService? service = null;
+
+        try
+        {
+            var op = ConfigureChromeOptions();
+            service = ConfigureDriverService();
+            driver = new ChromeDriver(service, op, TimeSpan.FromSeconds(_timeout));
+            
+            ConfigureDriver(driver);
+            driver.Navigate().GoToUrl(_url);
+            Thread.Sleep(_waitForPageToLoad);
+
+            var zoneGroups = new List<ZoneGroup>();
+            var selectElement = driver.FindElement(By.Id("inputzone"));
+            var optGroups = selectElement.FindElements(By.TagName("optgroup"));
+
+            foreach (var optGroup in optGroups)
+            {
+                var stateName = optGroup.GetAttribute("label")?.Trim();
+                if (string.IsNullOrWhiteSpace(stateName)) continue;
+
+                var zoneGroup = new ZoneGroup
+                {
+                    State = stateName,
+                    Zones = new List<ZoneOption>()
+                };
+
+                var options = optGroup.FindElements(By.TagName("option"));
+                foreach (var option in options)
+                {
+                    var value = option.GetAttribute("value")?.Trim();
+                    var text = option.Text?.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(text))
+                    {
+                        zoneGroup.Zones.Add(new ZoneOption
+                        {
+                            Value = value,
+                            Text = text
+                        });
+                    }
+                }
+
+                if (zoneGroup.Zones.Any())
+                {
+                    zoneGroups.Add(zoneGroup);
+                }
+            }
+
+            Console.WriteLine($"✓ Retrieved {zoneGroups.Count} states with {zoneGroups.Sum(z => z.Zones.Count)} zones");
+            return zoneGroups;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"✗ Error listing zones: {ex.Message}");
+            return new List<ZoneGroup>();
+        }
+        finally
+        {
+            driver?.Quit();
+            driver?.Dispose();
+            service?.Dispose();
         }
     }
 }

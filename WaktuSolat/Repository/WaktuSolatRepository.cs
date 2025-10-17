@@ -27,7 +27,7 @@ public class WaktuSolatRepository
 
             var existingRecord = await _context.WaktuSolat
                 .FirstOrDefaultAsync(w => 
-                    w.czone.Contains(zoneCode) && 
+                    !string.IsNullOrEmpty(zoneCode) && w.czone.Contains(zoneCode) && 
                     w.TarikhMasehi == data.TarikhMasehi);
 
             if (existingRecord != null)
