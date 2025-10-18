@@ -327,11 +327,7 @@
                     <span class="prayer-time">@Model.Isyak</span>
                 </div>
             </div>
-
-            <form method="post" asp-action="RefreshData" asp-route-zone="@selectedZone" onsubmit="showLoading()">
-                <button type="submit" class="refresh-btn">🔄 Kemas Kini Data</button>
-            </form>
-
+            
             <div class="footer">
                 Kemaskini terakhir: @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")
             </div>
