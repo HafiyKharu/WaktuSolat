@@ -7,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ScrapWaktuSolatService>();
 builder.Services.AddScoped<WaktuSolatService>();
+builder.Services.AddScoped<ZoneService>();
 builder.Services.AddScoped<WaktuSolatRepository>();
+builder.Services.AddScoped<ZoneRepository>();
 
 var app = builder.Build();
 

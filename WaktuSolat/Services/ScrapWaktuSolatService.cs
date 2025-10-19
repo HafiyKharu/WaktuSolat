@@ -2,7 +2,6 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using WaktuSolat.Models;
 using WaktuSolat.Helpers;
-using Microsoft.Extensions.Configuration;
 
 namespace WaktuSolat.Services;
 
@@ -71,45 +70,6 @@ public class ScrapWaktuSolatService
         {
             Console.WriteLine($"✗ Error scraping waktu solat for zone {zoneCode}: {ex.Message}");
             return null;
-        }
-        finally
-        {
-            SeleniumHelper.SafeDispose(driver, service);
-        }
-    }
-
-    /// <summary>
-    /// Get all available zones from e-solat website
-    /// </summary>
-    public async Task<List<ZoneGroup>> GetAllZonesAsync()
-    {
-        return await Task.Run(() => GetAllZones());
-    }
-
-    private List<ZoneGroup> GetAllZones()
-    {
-        IWebDriver? driver = null;
-        ChromeDriverService? service = null;
-
-        try
-        {
-            var options = SeleniumHelper.ConfigureChromeOptions();
-            service = SeleniumHelper.ConfigureDriverService();
-            driver = new ChromeDriver(service, options, TimeSpan.FromSeconds(_timeout));
-
-            SeleniumHelper.ConfigureDriver(driver, _timeout);
-            driver.Navigate().GoToUrl(_url);
-            Thread.Sleep(_waitForPageToLoad);
-
-            var zoneGroups = WaktuSolatScrapHelper.ExtractZoneGroups(driver);
-
-            Console.WriteLine($"✓ Retrieved {zoneGroups.Count} states with {zoneGroups.Sum(z => z.Zones.Count)} zones");
-            return zoneGroups;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"✗ Error listing zones: {ex.Message}");
-            return new List<ZoneGroup>();
         }
         finally
         {

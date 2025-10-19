@@ -112,9 +112,7 @@ public class WaktuSolatRepository
         }
     }
 
-    /// <summary>
     /// Get today's prayer time using PostgreSQL function
-    /// </summary>
     public async Task<WaktuSolatEntity?> GetTodayPrayerTimeAsync(string zoneCode)
     {
         try
@@ -193,79 +191,6 @@ public class WaktuSolatRepository
         }
     }
 
-    /// <summary>
-    /// Get prayer time for specific date using PostgreSQL function
-    /// </summary>
-    public async Task<WaktuSolatEntity?> GetPrayerTimeByDateAsync(string zoneCode, DateTime date)
-    {
-        try
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            Console.WriteLine($"Getting prayer time for zone: {zoneCode}, date: {date:dd/MM/yyyy}");
-
-            var sql = "SELECT getwaktusolat(@ZoneCode, @Date)::text";
-
-            var jsonResult = await connection.QuerySingleOrDefaultAsync<string>(
-                sql,
-                new { ZoneCode = zoneCode.ToUpper(), Date = date }
-            );
-
-            if (string.IsNullOrWhiteSpace(jsonResult))
-            {
-                Console.WriteLine($"✗ No result from function");
-                return null;
-            }
-
-            var jsonDoc = JsonDocument.Parse(jsonResult);
-            var root = jsonDoc.RootElement;
-
-            if (root.TryGetProperty("success", out var successProp) && successProp.GetBoolean() == false)
-            {
-                Console.WriteLine($"✗ No prayer time found");
-                return null;
-            }
-
-            if (!root.TryGetProperty("data", out var dataProp) || dataProp.ValueKind == JsonValueKind.Null)
-            {
-                return null;
-            }
-
-            var firstItem = dataProp.EnumerateArray().FirstOrDefault();
-            if (firstItem.ValueKind == JsonValueKind.Undefined)
-            {
-                return null;
-            }
-
-            var entity = new WaktuSolatEntity
-            {
-                Id = firstItem.GetProperty("id").GetInt32(),
-                czone = firstItem.GetProperty("czone").GetString() ?? string.Empty,
-                cbearing = firstItem.GetProperty("cbearing").GetString() ?? string.Empty,
-                TarikhMasehi = firstItem.GetProperty("tarikhMasehi").GetString() ?? string.Empty,
-                TarikhHijrah = firstItem.GetProperty("tarikhHijrah").GetString() ?? string.Empty,
-                Imsak = firstItem.GetProperty("imsak").GetString() ?? string.Empty,
-                Subuh = firstItem.GetProperty("subuh").GetString() ?? string.Empty,
-                Syuruk = firstItem.GetProperty("syuruk").GetString() ?? string.Empty,
-                Dhuha = firstItem.GetProperty("dhuha").GetString() ?? string.Empty,
-                Zohor = firstItem.GetProperty("zohor").GetString() ?? string.Empty,
-                Asar = firstItem.GetProperty("asar").GetString() ?? string.Empty,
-                Maghrib = firstItem.GetProperty("maghrib").GetString() ?? string.Empty,
-                Isyak = firstItem.GetProperty("isyak").GetString() ?? string.Empty,
-                CreatedAt = firstItem.GetProperty("createdAt").GetDateTime()
-            };
-
-            Console.WriteLine($"✓ Found prayer time for zone {entity.czone} on {entity.TarikhMasehi}");
-            return entity;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"✗ Error retrieving prayer time: {ex.Message}");
-            throw;
-        }
-    }
-
     public async Task<List<WaktuSolatEntity>> GetByZoneAsync(string zoneCode, int days = 7)
     {
         try
@@ -305,68 +230,6 @@ public class WaktuSolatRepository
         {
             Console.WriteLine($"✗ Error retrieving data: {ex.Message}");
             throw;
-        }
-    }
-
-    /// <summary>
-    /// Get waktu solat as raw JSON string using stored function
-    /// </summary>
-    public async Task<string> GetTodayPrayerTimeAsJsonAsync(string zoneCode)
-    {
-        try
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            var sql = "SELECT getwaktusolat(@ZoneCode, CURRENT_DATE)::text";
-
-            var jsonResult = await connection.QuerySingleOrDefaultAsync<string>(
-                sql,
-                new { ZoneCode = zoneCode.ToUpper() }
-            );
-
-            return jsonResult ?? "{}";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"✗ Error retrieving JSON: {ex.Message}");
-            return JsonSerializer.Serialize(new
-            {
-                success = false,
-                message = ex.Message,
-                data = (object?)null
-            });
-        }
-    }
-
-    /// <summary>
-    /// Get waktu solat as raw JSON string for specific date
-    /// </summary>
-    public async Task<string> GetPrayerTimeAsJsonAsync(string zoneCode, DateTime date)
-    {
-        try
-        {
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
-
-            var sql = "SELECT getwaktusolat(@ZoneCode, @Date)::text";
-
-            var jsonResult = await connection.QuerySingleOrDefaultAsync<string>(
-                sql,
-                new { ZoneCode = zoneCode.ToUpper(), Date = date }
-            );
-
-            return jsonResult ?? "{}";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"✗ Error retrieving JSON: {ex.Message}");
-            return JsonSerializer.Serialize(new
-            {
-                success = false,
-                message = ex.Message,
-                data = (object?)null
-            });
         }
     }
 }

@@ -1,239 +1,179 @@
-@model WaktuSolat.Models.WaktuSolatEntity
-@{
-    ViewData["Title"] = "Waktu Solat";
-    var allZones = ViewBag.AllZones as List<WaktuSolat.Models.ZoneGroup>;
-    var selectedZone = ViewBag.SelectedZone as string ?? "WLY01";
-}
-
-<!DOCTYPE html>
-<html lang="ms">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.5rem;
-        }
-
-        .zone-selector {
-            margin-bottom: 30px;
-        }
-
-        .zone-selector label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #555;
-            font-size: 1.1rem;
-        }
-
-        .zone-selector select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-
-        .zone-selector select:hover {
-            border-color: #667eea;
-        }
-
-        .zone-selector select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .zone-info {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .date-info {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .date-info p {
-            margin: 5px 0;
-            color: #555;
-        }
-
-        .prayer-times {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .prayer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .prayer-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .prayer-name {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .prayer-time {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .error-message,
-        .no-data {
-            text-align: center;
-            padding: 20px;
-            color: #e74c3c;
-            font-size: 1.2rem;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #999;
-            font-size: 0.9rem;
-        }
-
-        .refresh-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .refresh-btn:active {
-            transform: translateY(0);
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        @@media (max-width: 600px) {
+    @* filepath: d:\Learning .net\WaktuSolat\WaktuSolat\Views\Home\Index.cshtml *@
+    @model WaktuSolat.Models.WaktuSolatEntity
+    
+    @{
+        ViewData["Title"] = "Waktu Solat";
+        var allZones = ViewBag.AllZones as List<WaktuSolat.Models.ZoneGroup> ?? new List<WaktuSolat.Models.ZoneGroup>();
+        var selectedZone = ViewBag.SelectedZone as string ?? "WLY01";
+    }
+    
+    <!DOCTYPE html>
+    <html lang="ms">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@ViewData["Title"]</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+    
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }
+    
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                padding: 40px;
+            }
+    
             h1 {
-                font-size: 2rem;
+                text-align: center;
+                color: #333;
+                margin-bottom: 30px;
+                font-size: 2.5em;
             }
-
-            .prayer-name {
-                font-size: 1.1rem;
+    
+            .zone-selector {
+                margin-bottom: 30px;
             }
-
+    
+            .zone-selector label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #555;
+            }
+    
+            .zone-selector select {
+                width: 100%;
+                padding: 12px;
+                font-size: 16px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                background: white;
+                cursor: pointer;
+                transition: border-color 0.3s;
+            }
+    
+            .zone-selector select:hover {
+                border-color: #667eea;
+            }
+    
+            .zone-selector select:focus {
+                outline: none;
+                border-color: #764ba2;
+            }
+    
+            .zone-info {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 12px;
+                margin-bottom: 30px;
+            }
+    
+            .zone-info h2 {
+                color: #667eea;
+                margin-bottom: 10px;
+            }
+    
+            .zone-info p {
+                color: #666;
+                margin: 5px 0;
+            }
+    
+            .prayer-times {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+    
             .prayer-time {
-                font-size: 1.2rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 20px;
+                border-radius: 12px;
+                text-align: center;
+                color: white;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s;
             }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>⏰ Waktu Solat</h1>
-
-        @if (allZones != null && allZones.Any())
-        {
+    
+            .prayer-time:hover {
+                transform: translateY(-5px);
+            }
+    
+            .prayer-name {
+                font-size: 1.2em;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+    
+            .prayer-value {
+                font-size: 2em;
+                font-weight: bold;
+            }
+    
+            .error {
+                background: #fee;
+                color: #c33;
+                padding: 15px;
+                border-radius: 8px;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+    
+            .dates {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+    
+            .date-card {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+                text-align: center;
+            }
+    
+            .date-card strong {
+                display: block;
+                color: #667eea;
+                margin-bottom: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🕌 Waktu Solat</h1>
+    
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="error">
+                    <strong>Error:</strong> @ViewBag.Error
+                </div>
+            }
+    
             <div class="zone-selector">
-                <label for="zoneSelect">📍 Pilih Zon:</label>
-                <select id="zoneSelect" onchange="changeZone(this.value)">
+                <label for="zoneSelect">Pilih Zon:</label>
+                <select id="zoneSelect" onchange="changeZone()">
                     <option value="">-- Pilih Zon --</option>
                     @foreach (var group in allZones)
                     {
                         <optgroup label="@group.State">
                             @foreach (var zone in group.Zones)
                             {
-                                <option value="@zone.Value" selected="@(zone.Value == selectedZone)">
+                                <option value="@zone.Value" @(zone.Value == selectedZone ? "selected" : "")>
                                     @zone.Text
                                 </option>
                             }
@@ -241,119 +181,70 @@
                     }
                 </select>
             </div>
-        }
-
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">
-                @TempData["Success"]
-            </div>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-error">
-                @TempData["Error"]
-            </div>
-        }
-
-        @if (ViewBag.Error != null)
-        {
-            <div class="error-message">
-                @ViewBag.Error
-            </div>
-        }
-        else if (Model == null)
-        {
-            <div class="no-data">
-                @(ViewBag.Message ?? "Memuat data waktu solat...")
-            </div>
-            <div class="loading show">
-                <p>⏳ Sedang mendapatkan data...</p>
-            </div>
-        }
-        else
-        {
-            <div class="zone-info">
-                <strong>Zon:</strong> @Model.czone
-            </div>
-
-            <div class="date-info">
-                <p><strong>Tarikh Masehi:</strong> @Model.TarikhMasehi</p>
-                <p><strong>Tarikh Hijrah:</strong> @Model.TarikhHijrah</p>
-            </div>
-
-            <div class="prayer-times">
-                <div class="prayer-item">
-                    <span class="prayer-name">Imsak</span>
-                    <span class="prayer-time">@Model.Imsak</span>
+    
+            @if (Model != null)
+            {
+                <div class="zone-info">
+                    <h2>@Model.czone (@Model.cbearing)</h2>
                 </div>
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Subuh</span>
-                    <span class="prayer-time">@Model.Subuh</span>
-                </div>
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Syuruk</span>
-                    <span class="prayer-time">@Model.Syuruk</span>
-                </div>
-
-                @if (!string.IsNullOrEmpty(Model.Dhuha))
-                {
-                    <div class="prayer-item">
-                        <span class="prayer-name">Dhuha</span>
-                        <span class="prayer-time">@Model.Dhuha</span>
+    
+                <div class="dates">
+                    <div class="date-card">
+                        <strong>📅 Tarikh Masehi</strong>
+                        @Model.TarikhMasehi
                     </div>
+                    <div class="date-card">
+                        <strong>🌙 Tarikh Hijrah</strong>
+                        @Model.TarikhHijrah
+                    </div>
+                </div>
+    
+                <div class="prayer-times">
+                    <div class="prayer-time">
+                        <div class="prayer-name">Imsak</div>
+                        <div class="prayer-value">@Model.Imsak</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Subuh</div>
+                        <div class="prayer-value">@Model.Subuh</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Syuruk</div>
+                        <div class="prayer-value">@Model.Syuruk</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Dhuha</div>
+                        <div class="prayer-value">@Model.Dhuha</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Zohor</div>
+                        <div class="prayer-value">@Model.Zohor</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Asar</div>
+                        <div class="prayer-value">@Model.Asar</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Maghrib</div>
+                        <div class="prayer-value">@Model.Maghrib</div>
+                    </div>
+                    <div class="prayer-time">
+                        <div class="prayer-name">Isyak</div>
+                        <div class="prayer-value">@Model.Isyak</div>
+                    </div>
+                </div>
+            }
+        </div>
+    
+        <script>
+            function changeZone() {
+                const select = document.getElementById('zoneSelect');
+                const selectedZone = select.value;
+                
+                if (selectedZone) {
+                    window.location.href = `/?zone=${selectedZone}`;
                 }
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Zohor</span>
-                    <span class="prayer-time">@Model.Zohor</span>
-                </div>
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Asar</span>
-                    <span class="prayer-time">@Model.Asar</span>
-                </div>
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Maghrib</span>
-                    <span class="prayer-time">@Model.Maghrib</span>
-                </div>
-
-                <div class="prayer-item">
-                    <span class="prayer-name">Isyak</span>
-                    <span class="prayer-time">@Model.Isyak</span>
-                </div>
-            </div>
-            
-            <div class="footer">
-                Kemaskini terakhir: @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")
-            </div>
-        }
-    </div>
-
-    <script>
-        function changeZone(zoneValue) {
-            if (zoneValue) {
-                window.location.href = '@Url.Action("Index", "Home")?zone=' + zoneValue;
             }
-        }
-
-        function showLoading() {
-            document.querySelector('.refresh-btn').innerHTML = '⏳ Memuat...';
-            document.querySelector('.refresh-btn').disabled = true;
-        }
-
-        // Set the selected zone on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            var select = document.getElementById('zoneSelect');
-            if (select) {
-                select.value = '@selectedZone';
-            }
-        });
-    </script>
-</body>
-
-</html>
+        </script>
+    </body>
+    </html>

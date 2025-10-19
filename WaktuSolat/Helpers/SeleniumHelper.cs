@@ -4,14 +4,9 @@ using OpenQA.Selenium.Support.UI;
 
 namespace WaktuSolat.Helpers;
 
-/// <summary>
-/// Helper class for Selenium WebDriver operations
-/// </summary>
 public static class SeleniumHelper
 {
-    /// <summary>
     /// Configure Chrome options for headless scraping
-    /// </summary>
     public static ChromeOptions ConfigureChromeOptions()
     {
         var options = new ChromeOptions();
@@ -37,9 +32,7 @@ public static class SeleniumHelper
         return options;
     }
 
-    /// <summary>
     /// Configure Chrome driver service
-    /// </summary>
     public static ChromeDriverService ConfigureDriverService()
     {
         var service = ChromeDriverService.CreateDefaultService();
@@ -48,18 +41,14 @@ public static class SeleniumHelper
         return service;
     }
 
-    /// <summary>
     /// Configure driver timeouts
-    /// </summary>
     public static void ConfigureDriver(IWebDriver driver, int timeoutSeconds = 30)
     {
         driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(timeoutSeconds);
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
     }
 
-    /// <summary>
     /// Safely get text from element by ID
-    /// </summary>
     public static string GetTextByIdSafe(IWebDriver driver, string id)
     {
         try
@@ -78,9 +67,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Safely get text from element by CSS selector
-    /// </summary>
     public static string GetTextByCssSelectorSafe(IWebDriver driver, string cssSelector)
     {
         try
@@ -99,9 +86,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Wait for element to be present and visible
-    /// </summary>
     public static IWebElement? WaitForElement(IWebDriver driver, By by, int timeoutSeconds = 10)
     {
         try
@@ -124,9 +109,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Wait for elements to be present
-    /// </summary>
     public static IReadOnlyCollection<IWebElement>? WaitForElements(IWebDriver driver, By by, int timeoutSeconds = 10)
     {
         try
@@ -149,9 +132,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Select option from dropdown by value
-    /// </summary>
     public static bool SelectDropdownByValue(IWebDriver driver, string elementId, string value)
     {
         try
@@ -167,9 +148,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Select option from dropdown by text
-    /// </summary>
     public static bool SelectDropdownByText(IWebDriver driver, string elementId, string text)
     {
         try
@@ -185,9 +164,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Check if element exists
-    /// </summary>
     public static bool ElementExists(IWebDriver driver, By by)
     {
         try
@@ -201,9 +178,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Dispose driver and service safely
-    /// </summary>
     public static void SafeDispose(IWebDriver? driver, ChromeDriverService? service)
     {
         try
@@ -218,9 +193,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Take screenshot for debugging
-    /// </summary>
     public static void TakeScreenshot(IWebDriver driver, string filename)
     {
         try
@@ -235,9 +208,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Execute JavaScript
-    /// </summary>
     public static object? ExecuteJavaScript(IWebDriver driver, string script, params object[] args)
     {
         try
@@ -252,9 +223,7 @@ public static class SeleniumHelper
         }
     }
 
-    /// <summary>
     /// Scroll to element
-    /// </summary>
     public static void ScrollToElement(IWebDriver driver, IWebElement element)
     {
         try

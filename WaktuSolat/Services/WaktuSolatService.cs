@@ -118,20 +118,4 @@ public class WaktuSolatService
             throw;
         }
     }
-
-    /// <summary>
-    /// Get all available zones
-    /// </summary>
-    public async Task<List<ZoneGroup>> GetAllZonesAsync()
-    {
-        try
-        {
-            return await _scrapService.GetAllZonesAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"✗ Error getting zones: {ex.Message}");
-            throw;
-        }
-    }
 }
