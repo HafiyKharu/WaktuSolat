@@ -129,81 +129,86 @@ export default function PrayerTimesDisplay() {
   const prayers: PrayerName[] = ['imsak', 'subuh', 'syuruk', 'dhuha', 'zohor', 'asar', 'maghrib', 'isyak'];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Location and Date Info */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <MapPin className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-            {prayerTimes.czone}
-          </h2>
-        </div>
-        <p className="text-gray-600 dark:text-gray-300 mb-2">{prayerTimes.cbearing}</p>
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <Calendar className="w-4 h-4" />
-          <span>{prayerTimes.tarikhMasehi}</span>
-          <span className="mx-2">•</span>
-          <span>{prayerTimes.tarikhHijrah}</span>
-        </div>
-      </div>
-
-      {/* Next Prayer Countdown */}
-      {nextPrayer && (
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Solat Seterusnya</p>
-              <h3 className="text-2xl font-bold">{PRAYER_NAMES[nextPrayer.name]}</h3>
-              <p className="text-lg mt-1">{nextPrayer.time}</p>
+    <div className="animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Location & Countdown */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Location and Date Info */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                {prayerTimes.czone}
+              </h2>
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-6 h-6" />
-              </div>
-              <p className="text-3xl font-mono font-bold">{timeRemaining}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-2">{prayerTimes.cbearing}</p>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <Calendar className="w-4 h-4" />
+              <span>{prayerTimes.tarikhMasehi}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <span>{prayerTimes.tarikhHijrah}</span>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Prayer Times List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {prayers.map((prayer) => {
-            const time = prayerTimes[prayer];
-            const isNext = nextPrayer?.name === prayer;
-            
-            return (
-              <div
-                key={prayer}
-                className={`flex items-center justify-between p-4 transition-colors ${
-                  isNext
-                    ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-indigo-600'
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-indigo-600 dark:text-indigo-400">
-                    {PRAYER_ICONS[prayer]}
-                  </div>
-                  <span className={`font-medium ${
-                    isNext
-                      ? 'text-indigo-900 dark:text-indigo-100'
-                      : 'text-gray-800 dark:text-gray-200'
-                  }`}>
-                    {PRAYER_NAMES[prayer]}
-                  </span>
+          {/* Next Prayer Countdown */}
+          {nextPrayer && (
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
+              <p className="text-sm opacity-90 mb-3">Solat Seterusnya</p>
+              <h3 className="text-3xl font-bold mb-2">{PRAYER_NAMES[nextPrayer.name]}</h3>
+              <p className="text-xl mb-4">{nextPrayer.time}</p>
+              <div className="border-t border-white/20 pt-4 mt-4">
+                <div className="flex items-center gap-2 mb-2 opacity-90">
+                  <Clock className="w-5 h-5" />
+                  <span className="text-sm">Masa Berbaki</span>
                 </div>
-                <span className={`text-lg font-mono ${
-                  isNext
-                    ? 'text-indigo-900 dark:text-indigo-100 font-bold'
-                    : 'text-gray-700 dark:text-gray-300'
-                }`}>
-                  {time}
-                </span>
+                <p className="text-4xl font-mono font-bold">{timeRemaining}</p>
               </div>
-            );
-          })}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column - Prayer Times List */}
+        <div className="lg:col-span-2">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {prayers.map((prayer) => {
+                const time = prayerTimes[prayer];
+                const isNext = nextPrayer?.name === prayer;
+                
+                return (
+                  <div
+                    key={prayer}
+                    className={`flex items-center justify-between p-4 transition-colors ${
+                      isNext
+                        ? 'bg-indigo-50 dark:bg-indigo-900/20 border-l-4 border-indigo-600'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-indigo-600 dark:text-indigo-400">
+                        {PRAYER_ICONS[prayer]}
+                      </div>
+                      <span className={`font-medium ${
+                        isNext
+                          ? 'text-indigo-900 dark:text-indigo-100'
+                          : 'text-gray-800 dark:text-gray-200'
+                      }`}>
+                        {PRAYER_NAMES[prayer]}
+                      </span>
+                    </div>
+                    <span className={`text-lg font-mono ${
+                      isNext
+                        ? 'text-indigo-900 dark:text-indigo-100 font-bold'
+                        : 'text-gray-700 dark:text-gray-300'
+                    }`}>
+                      {time}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -212,19 +217,23 @@ export default function PrayerTimesDisplay() {
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-1 space-y-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse">
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse">
-        <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-      </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse space-y-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
-        ))}
+      <div className="lg:col-span-2">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 animate-pulse space-y-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          ))}
+        </div>
       </div>
     </div>
   );
