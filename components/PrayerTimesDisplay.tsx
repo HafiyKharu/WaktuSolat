@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { WaktuSolatData, NextPrayer, PrayerName } from '@/lib/types';
-import { getTimeRemaining, formatDate, parseTime } from '@/lib/utils';
+import { getTimeRemaining, formatDate, parseTime, formatTimeTo12Hour } from '@/lib/utils';
 import { 
   Sun, 
   Sunrise, 
@@ -156,7 +156,7 @@ export default function PrayerTimesDisplay() {
             <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg p-6">
               <p className="text-sm opacity-90 mb-3">Solat Seterusnya</p>
               <h3 className="text-3xl font-bold mb-2">{PRAYER_NAMES[nextPrayer.name]}</h3>
-              <p className="text-xl mb-4">{nextPrayer.time}</p>
+              <p className="text-xl mb-4">{formatTimeTo12Hour(nextPrayer.time)}</p>
               <div className="border-t border-white/20 pt-4 mt-4">
                 <div className="flex items-center gap-2 mb-2 opacity-90">
                   <Clock className="w-5 h-5" />
@@ -202,7 +202,7 @@ export default function PrayerTimesDisplay() {
                         ? 'text-indigo-900 dark:text-indigo-100 font-bold'
                         : 'text-gray-700 dark:text-gray-300'
                     }`}>
-                      {time}
+                      {formatTimeTo12Hour(time)}
                     </span>
                   </div>
                 );

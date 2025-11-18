@@ -11,6 +11,13 @@ export function parseTime(timeStr: string): Date {
   return now;
 }
 
+export function formatTimeTo12Hour(timeStr: string): string {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+  return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
 export function getTimeRemaining(targetTime: string): string {
   const now = new Date();
   const target = parseTime(targetTime);
