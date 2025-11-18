@@ -19,7 +19,7 @@ export default function Home() {
           </p>
         </header>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <Suspense fallback={<LoadingSkeleton />}>
             <ZoneSelector />
           </Suspense>
