@@ -199,15 +199,6 @@ export default function ZoneSelector() {
             </div>
           )}
         </div>
-
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="mt-7 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center gap-2"
-        >
-          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? 'Refreshing...' : 'Refresh Zones'}
-        </button>
       </div>
     </div>
   );
