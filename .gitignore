@@ -1,53 +1,37 @@
-# Visual Studio / .NET ignore file
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# User-specific files
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+# Testing
+/coverage
 
-# Build results
-[Bb]in/
-[Oo]bj/
-**/bin/
-**/obj/
-publish/
-artifacts/
+# Next.js
+/.next/
+/out/
 
-# Visual Studio cache and config
-.vs/
-.vscode/
+# Production
+/build
 
-# NuGet packages and package artifacts
-packages/
-**/packages/
-.nuget/
-*.nupkg
-*.snupkg
-**/*.nupkg
-**/*.snupkg
+# Misc
+.DS_Store
+*.pem
 
-# Ignore NuGet global packages folder (won't usually be in repo)
-# %USERPROFILE%\.nuget\packages
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Rider
-.idea/
+# Local env files
+.env*.local
+.env
 
-# Logs
-*.log
+# Vercel
+.vercel
 
-# Temporary files
-*.tmp
-*.temp
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# Generated files
-*.Generated.cs
-
-# Common lock/build files you may want to untrack
-project.assets.json
-project.nuget.cache
-
-**/appsettings.json
-**/properties/PublishProfiles/
-**/Migrations/
+# Prisma
+prisma/migrations

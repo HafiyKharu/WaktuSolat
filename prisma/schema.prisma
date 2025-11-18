@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WaktuSolat {
+  id            Int      @id @default(autoincrement())
+  czone         String   @db.VarChar(200)
+  cbearing      String   @db.VarChar(200)
+  tarikhMasehi  String   @map("tarikh_masehi") @db.VarChar(20)
+  tarikhHijrah  String   @map("tarikh_hijrah") @db.VarChar(20)
+  imsak         String   @db.VarChar(10)
+  subuh         String   @db.VarChar(10)
+  syuruk        String   @db.VarChar(10)
+  dhuha         String   @db.VarChar(10)
+  zohor         String   @db.VarChar(10)
+  asar          String   @db.VarChar(10)
+  maghrib       String   @db.VarChar(10)
+  isyak         String   @db.VarChar(10)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("waktu_solat")
+  @@index([czone, tarikhMasehi])
+}
+
+model Zone {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique @db.VarChar(10)
+  state     String   @db.VarChar(100)
+  location  String   @db.VarChar(200)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("zones")
+  @@index([state])
+}
